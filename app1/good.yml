@@ -1,0 +1,35 @@
+stages:
+  - build
+  - test
+  - deploy
+
+cache:
+  paths:
+    - node_modules/
+
+build:
+  stage: build
+  script:
+    - echo "билд"
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 week
+
+test:
+  stage: test
+  script:
+    - echo "тест"
+    - npm test
+  dependencies:
+    - build
+
+deploy:
+  stage: deploy
+  script:
+    - echo "деплой"
+    - rsync -avz ./dist/ user@server:$DEPLOY_PATH
+  environment:
+    DEPLOY_PATH: /var/www/html
